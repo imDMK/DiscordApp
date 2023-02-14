@@ -27,7 +27,6 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.event.interaction.ButtonClickEvent;
 import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.listener.interaction.ButtonClickListener;
-import org.javacord.api.util.logging.ExceptionLogger;
 
 import java.util.Comparator;
 import java.util.List;
@@ -106,8 +105,6 @@ public class ButtonListener implements ButtonClickListener {
                 }
             }
         }
-
-        event.getButtonInteraction().getMessage().edit().exceptionally(ExceptionLogger.get());
 
         if (warnsListId || warnsList2Id || giveawayLeaveConfirmId) {
             String[] args = customId.split("-");
@@ -198,8 +195,7 @@ public class ButtonListener implements ButtonClickListener {
                                         .exceptionallyAsync(throwable -> {
                                             interaction.createOriginalMessageUpdater().addEmbed(new EmbedMessage(server).error().setDescription("Wystąpił błąd.").addField("Błąd", throwable.getMessage())).update();
                                             return null;
-                                        }), () ->
-                                interaction.createOriginalMessageUpdater().addEmbed(new EmbedMessage(server).error().setDescription("Wystąpił nieoczekiwany błąd.")).update());
+                                        }), () -> interaction.createOriginalMessageUpdater().addEmbed(new EmbedMessage(server).error().setDescription("Wystąpił nieoczekiwany błąd.")).update());
             }
         }
 

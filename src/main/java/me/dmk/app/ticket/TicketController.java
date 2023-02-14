@@ -77,6 +77,7 @@ public class TicketController {
             return ticket;
         });
     }
+
     public boolean delete(Ticket ticket) {
         this.ticketMap.remove(ticket.getUser());
         DeleteResult deleteResult = this.ticketCollection.deleteOne(Filters.eq("user", String.valueOf(ticket.getUser())));

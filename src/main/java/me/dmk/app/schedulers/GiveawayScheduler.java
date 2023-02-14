@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,11 +28,12 @@ public class GiveawayScheduler implements Runnable {
     public void run() {
         Logger logger = LoggerFactory.getLogger(this.getClass());
 
-        for (Giveaway giveaway : this.giveawayController.getGiveawayMap().values()) {
-            if (giveaway.isEnded()) {
-                return;
-            }
+        List<Giveaway> giveawayList = this.giveawayController.getGiveawayMap().values()
+                .stream()
+                .filter(giveaway -> !giveaway.isEnded())
+                .toList();
 
+        for (Giveaway giveaway : giveawayList) {
             Optional<Server> serverOptional = this.discordApi.getServerById(giveaway.getServer());
             if (serverOptional.isEmpty()) {
                 this.giveawayController.delete(giveaway);

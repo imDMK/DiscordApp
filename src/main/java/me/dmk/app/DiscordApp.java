@@ -94,10 +94,13 @@ public class DiscordApp {
         this.discordApi.addMessageDeleteListener(new MessageListener(this.giveawayController, this.serverSettingsController));
 
         /* Schedulers */
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        this.executorService = Executors.newScheduledThreadPool(
+                Runtime.getRuntime().availableProcessors()
+        );
+
         this.executorService.scheduleAtFixedRate(new GiveawayScheduler(this.discordApi, this.giveawayController), 1L, 3L, TimeUnit.SECONDS);
 
-        long elapsedTime = start - System.currentTimeMillis();
+        long elapsedTime = System.currentTimeMillis() - start;
         log.info("The bot has been successfully turned on (time elapsed: " + elapsedTime + " ms).");
 
         this.discordApi.updateStatus(UserStatus.ONLINE);

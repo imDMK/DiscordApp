@@ -41,7 +41,7 @@ public class WarnController {
         this.warnCollection.find().forEach((Consumer<? super Document>) document -> {
             Warn warn = this.mongoService.load(document, Warn.class);
 
-            if (discordApi.getServerById(warn.getServer()).isEmpty()) {
+            if (this.discordApi.getServerById(warn.getServer()).isEmpty()) {
                 delete(warn);
                 logger.info("Deleted warn " + warn.getIdentifier() + " due to server doesn't exists.");
                 return;

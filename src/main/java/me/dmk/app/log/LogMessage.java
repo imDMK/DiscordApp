@@ -27,14 +27,14 @@ public class LogMessage {
 
         Optional<ServerTextChannel> textChannelOptional = this.server.getTextChannelById(this.settings.getLogsChannel());
         if (textChannelOptional.isEmpty()) {
-            log.info("Failed to send log message, channel doesn't exists. Server: " + this.server.getId());
+            log.error("Failed to send log message, channel doesn't exists. Server: " + this.server.getId());
             return;
         }
 
         ServerTextChannel textChannel = textChannelOptional.get();
 
         if (textChannel.canYouSee() || textChannel.canYouWrite()) {
-            log.info("Failed to send log message, missing permissions. Server: " + this.server.getId());
+            log.error("Failed to send log message, missing permissions. Server: " + this.server.getId());
             return;
         }
 

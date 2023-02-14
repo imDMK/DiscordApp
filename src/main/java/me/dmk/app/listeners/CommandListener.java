@@ -21,9 +21,8 @@ public class CommandListener implements SlashCommandCreateListener {
 
         String commandName = interaction.getCommandName();
 
-        interaction.getServer().ifPresent(server ->
-                this.commandService.getCommand(commandName)
-                        .ifPresent(command -> command.execute(server, interaction))
+        interaction.getServer().ifPresent(server -> this.commandService.getCommand(commandName)
+                .ifPresent(command -> command.execute(server, interaction))
         );
     }
 }

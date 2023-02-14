@@ -8,4 +8,4 @@ Contains:
 - Giveaway system
 - Ban and unban users with notification by private message of the user
 
-Application needs MongoDB databse server for correct work.
+Application needs MongoDB databse for work.

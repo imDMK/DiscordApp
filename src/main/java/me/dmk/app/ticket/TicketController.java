@@ -1,13 +1,10 @@
 package me.dmk.app.ticket;
 
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.DeleteResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.dmk.app.database.MongoService;
-import org.bson.Document;
+import me.dmk.app.database.data.MongoDataService;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.channel.ServerChannel;
@@ -27,17 +24,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class TicketController {
 
-    private final MongoService mongoService;
+    private final MongoDataService mongoDataService;
     private final DiscordApi discordApi;
 
     @Getter
     private final Map<Long, Ticket> ticketMap = new ConcurrentHashMap<>();
-    private MongoCollection<Document> ticketCollection;
 
     public void load() {
-        this.ticketCollection = this.mongoService.getMongoDatabase().getCollection("tickets");
-
-        this.mongoService.loadAll(this.ticketCollection, Ticket.class).forEach(ticket -> {
+        this.mongoDataService.findAll("tickets", Ticket.class).forEach(ticket -> {
             Optional<Server> serverOptional = discordApi.getServerById(ticket.getServer());
             if (serverOptional.isEmpty()) {
                 this.delete(ticket);
@@ -71,7 +65,7 @@ public class TicketController {
 
     public CompletableFuture<Ticket> create(Ticket ticket) {
         return CompletableFuture.supplyAsync(() -> {
-            this.mongoService.save(this.ticketCollection, Filters.eq("user", String.valueOf(ticket.getUser())), ticket);
+            this.mongoDataService.save(Filters.eq("user", String.valueOf(ticket.getUser())), ticket);
             this.ticketMap.put(ticket.getUser(), ticket);
 
             return ticket;
@@ -80,9 +74,8 @@ public class TicketController {
 
     public boolean delete(Ticket ticket) {
         this.ticketMap.remove(ticket.getUser());
-        DeleteResult deleteResult = this.ticketCollection.deleteOne(Filters.eq("user", String.valueOf(ticket.getUser())));
 
-        return deleteResult.wasAcknowledged();
+        return this.mongoDataService.delete(Filters.eq("user", String.valueOf(ticket.getUser())));
     }
 
     public Optional<Ticket> get(User user) {

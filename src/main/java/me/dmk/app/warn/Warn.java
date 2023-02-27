@@ -1,6 +1,7 @@
 package me.dmk.app.warn;
 
 import lombok.Data;
+import me.dmk.app.database.data.entity.DataEntity;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
@@ -13,6 +14,7 @@ import java.util.Date;
  */
 
 @Data
+@DataEntity(collection = "warns")
 public class Warn implements Serializable {
 
     private final long server;

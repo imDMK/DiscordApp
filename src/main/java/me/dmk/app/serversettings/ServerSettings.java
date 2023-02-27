@@ -1,6 +1,7 @@
 package me.dmk.app.serversettings;
 
 import lombok.Data;
+import me.dmk.app.database.data.entity.DataEntity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
  */
 
 @Data
+@DataEntity(collection = "serverSettings")
 public class ServerSettings implements Serializable {
 
     private long server;

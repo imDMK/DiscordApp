@@ -1,12 +1,10 @@
 package me.dmk.app.serversettings;
 
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.dmk.app.database.MongoService;
-import org.bson.Document;
+import me.dmk.app.database.data.MongoDataService;
 import org.javacord.api.DiscordApi;
 
 import java.util.Map;
@@ -22,17 +20,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class ServerSettingsController {
 
-    private final MongoService mongoService;
+    private final MongoDataService mongoDataService;
     private final DiscordApi discordApi;
 
     @Getter
     private final Map<Long, ServerSettings> serverSettingsMap = new ConcurrentHashMap<>();
-    private MongoCollection<Document> serverSettingsCollection;
 
     public void load() {
-        this.serverSettingsCollection = this.mongoService.getMongoDatabase().getCollection("serverSettings");
 
-        this.mongoService.loadAll(this.serverSettingsCollection, ServerSettings.class).forEach(serverSettings ->
+        this.mongoDataService.findAll("serverSettings", ServerSettings.class).forEach(serverSettings ->
                 this.discordApi.getServerById(serverSettings.getServer())
                         .ifPresentOrElse(server ->
                                         this.serverSettingsMap.put(server.getId(), serverSettings)
@@ -49,7 +45,7 @@ public class ServerSettingsController {
         ServerSettings serverSettings = new ServerSettings(serverId);
 
         return CompletableFuture.supplyAsync(() -> {
-            this.mongoService.save(this.serverSettingsCollection, Filters.eq("server", String.valueOf(serverSettings.getServer())), serverSettings);
+            this.mongoDataService.save(Filters.eq("server", String.valueOf(serverSettings.getServer())), serverSettings);
             this.serverSettingsMap.put(serverSettings.getServer(), serverSettings);
 
             return serverSettings;
@@ -58,13 +54,13 @@ public class ServerSettingsController {
 
     public CompletableFuture<ServerSettings> update(ServerSettings serverSettings) {
         return CompletableFuture.supplyAsync(() -> {
-            this.mongoService.save(this.serverSettingsCollection, Filters.eq("server", String.valueOf(serverSettings.getServer())), serverSettings);
+            this.mongoDataService.save(Filters.eq("server", String.valueOf(serverSettings.getServer())), serverSettings);
             return serverSettings;
         });
     }
 
     public void delete(ServerSettings serverSettings) {
-        this.serverSettingsCollection.deleteOne(Filters.eq("server", String.valueOf(serverSettings.getServer())));
+        this.mongoDataService.delete(serverSettings);
         this.serverSettingsMap.remove(serverSettings.getServer());
     }
 

@@ -1,12 +1,16 @@
 package me.dmk.app;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.LongSerializationPolicy;
 import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.hjson.HjsonConfigurer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.dmk.app.commands.CommandService;
 import me.dmk.app.configuration.ClientConfiguration;
-import me.dmk.app.database.MongoService;
+import me.dmk.app.database.MongoClientService;
+import me.dmk.app.database.data.MongoDataService;
 import me.dmk.app.giveaway.GiveawayController;
 import me.dmk.app.listeners.ButtonListener;
 import me.dmk.app.listeners.ChannelListener;
@@ -35,7 +39,8 @@ public class DiscordApp {
     private final ClientConfiguration configuration;
     private final DiscordApi discordApi;
 
-    private final MongoService mongoService;
+    private final MongoClientService mongoClientService;
+    private final MongoDataService mongoDataService;
 
     private final GiveawayController giveawayController;
     private final ServerSettingsController serverSettingsController;
@@ -63,20 +68,26 @@ public class DiscordApp {
                 .login().join();
 
         /* Services */
-        this.mongoService = new MongoService(this.configuration.databaseConfiguration);
-        this.mongoService.connect();
+        this.mongoClientService = new MongoClientService(this.configuration.databaseConfiguration);
+        this.mongoClientService.connect();
+
+        Gson gson = new GsonBuilder()
+                .setLongSerializationPolicy(LongSerializationPolicy.STRING)
+                .create();
+
+        this.mongoDataService = new MongoDataService(this.mongoClientService, gson);
 
         /* Controllers */
-        this.giveawayController = new GiveawayController(this.mongoService, this.discordApi);
+        this.giveawayController = new GiveawayController(this.mongoDataService, this.discordApi);
         this.giveawayController.load();
 
-        this.serverSettingsController = new ServerSettingsController(this.mongoService, this.discordApi);
+        this.serverSettingsController = new ServerSettingsController(this.mongoDataService, this.discordApi);
         this.serverSettingsController.load();
 
-        this.ticketController = new TicketController(this.mongoService, this.discordApi);
+        this.ticketController = new TicketController(this.mongoDataService, this.discordApi);
         this.ticketController.load();
 
-        this.warnController = new WarnController(this.mongoService, this.discordApi);
+        this.warnController = new WarnController(this.mongoDataService, this.discordApi);
         this.warnController.load();
 
         log.info("Loaded all services. Loading commands...");
@@ -98,7 +109,7 @@ public class DiscordApp {
                 Runtime.getRuntime().availableProcessors()
         );
 
-        this.executorService.scheduleAtFixedRate(new GiveawayScheduler(this.discordApi, this.giveawayController), 1L, 3L, TimeUnit.SECONDS);
+        this.executorService.scheduleWithFixedDelay(new GiveawayScheduler(this.discordApi, this.giveawayController), 1L, 3L, TimeUnit.SECONDS);
 
         long elapsedTime = System.currentTimeMillis() - start;
         log.info("The bot has been successfully turned on (time elapsed: " + elapsedTime + " ms).");

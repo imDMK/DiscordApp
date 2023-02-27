@@ -1,13 +1,11 @@
 package me.dmk.app.giveaway;
 
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.dmk.app.database.MongoService;
+import me.dmk.app.database.data.MongoDataService;
 import me.dmk.app.embed.EmbedMessage;
-import org.bson.Document;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.Message;
@@ -32,17 +30,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class GiveawayController {
 
-    private final MongoService mongoService;
+    private final MongoDataService mongoDataService;
     private final DiscordApi discordApi;
 
     @Getter
     private Map<Long, Giveaway> giveawayMap = new ConcurrentHashMap<>();
-    private MongoCollection<Document> giveawayCollection;
 
     public void load() {
-        this.giveawayCollection = this.mongoService.getMongoDatabase().getCollection("giveaways");
-
-        this.mongoService.loadAll(this.giveawayCollection, Giveaway.class).forEach(giveaway -> {
+        this.mongoDataService.findAll("giveaways", Giveaway.class).forEach(giveaway -> {
             Optional<Server> server = discordApi.getServerById(giveaway.getServer());
             if (server.isEmpty()) {
                 this.delete(giveaway);
@@ -57,7 +52,6 @@ public class GiveawayController {
                 return;
             }
 
-            //Check if giveaway message exists
             textChannel.get().getMessageById(giveaway.getMessage())
                     .exceptionally(throwable -> {
                         this.delete(giveaway);
@@ -87,7 +81,7 @@ public class GiveawayController {
 
     public CompletableFuture<Giveaway> create(Giveaway giveaway) {
         return CompletableFuture.supplyAsync(() -> {
-            this.mongoService.save(this.giveawayCollection, Filters.eq("message", String.valueOf(giveaway.getMessage())), giveaway);
+            this.mongoDataService.save(Filters.eq("message", String.valueOf(giveaway.getMessage())), giveaway);
             this.giveawayMap.put(giveaway.getMessage(), giveaway);
             return giveaway;
         });
@@ -95,14 +89,14 @@ public class GiveawayController {
 
     public CompletableFuture<Giveaway> update(Giveaway giveaway) {
         return CompletableFuture.supplyAsync(() -> {
-            this.mongoService.save(this.giveawayCollection, Filters.eq("message", String.valueOf(giveaway.getMessage())), giveaway);
+            this.mongoDataService.save(Filters.eq("message", String.valueOf(giveaway.getMessage())), giveaway);
             return giveaway;
         });
     }
 
     public void delete(Giveaway giveaway) {
         this.giveawayMap.remove(giveaway.getMessage());
-        this.giveawayCollection.deleteOne(Filters.eq("message", String.valueOf(giveaway.getMessage())));
+        this.mongoDataService.delete(giveaway);
     }
 
     public CompletableFuture<Giveaway> addUser(User user, Giveaway giveaway) {

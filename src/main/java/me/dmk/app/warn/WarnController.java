@@ -1,61 +1,50 @@
 package me.dmk.app.warn;
 
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.DeleteResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.dmk.app.database.MongoService;
-import org.bson.Document;
+import lombok.extern.slf4j.Slf4j;
+import me.dmk.app.database.data.MongoDataService;
 import org.javacord.api.DiscordApi;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
  * Created by DMK on 06.12.2022
  */
 
+@Slf4j
 @RequiredArgsConstructor
 public class WarnController {
 
-    private final MongoService mongoService;
+    private final MongoDataService mongoDataService;
     private final DiscordApi discordApi;
 
     @Getter
     private Map<String, Warn> warnMap = new ConcurrentHashMap<>();
-    private MongoCollection<Document> warnCollection;
 
     public void load() {
-        this.warnCollection = mongoService.getMongoDatabase().getCollection("warns");
-
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-
-        this.warnCollection.find().forEach((Consumer<? super Document>) document -> {
-            Warn warn = this.mongoService.load(document, Warn.class);
-
+        this.mongoDataService.findAll("warns", Warn.class).forEach(warn -> {
             if (this.discordApi.getServerById(warn.getServer()).isEmpty()) {
                 delete(warn);
-                logger.info("Deleted warn " + warn.getIdentifier() + " due to server doesn't exists.");
+                log.info("Deleted warn " + warn.getIdentifier() + " due to server doesn't exists.");
                 return;
             }
 
             this.warnMap.put(warn.getIdentifier(), warn);
         });
 
-        logger.info("Loaded " + this.warnMap.size() + " users warns.");
+        log.info("Loaded " + this.warnMap.size() + " users warns.");
     }
 
     public CompletableFuture<Warn> create(Warn warn) {
         return CompletableFuture.supplyAsync(() -> {
-            this.mongoService.save(this.warnCollection, Filters.eq("identifier", warn.getIdentifier()), warn);
+            this.mongoDataService.save(Filters.eq("identifier", warn.getIdentifier()), warn);
             this.warnMap.put(warn.getIdentifier(), warn);
 
             return warn;
@@ -65,8 +54,7 @@ public class WarnController {
     public boolean delete(Warn warn) {
         this.warnMap.remove(warn.getIdentifier());
 
-        DeleteResult deleteResult = this.warnCollection.deleteOne(Filters.eq("identifier", warn.getIdentifier()));
-        return deleteResult.wasAcknowledged();
+        return this.mongoDataService.delete(warn);
     }
 
     public Optional<Warn> get(String identifier) {

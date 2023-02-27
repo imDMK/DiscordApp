@@ -1,6 +1,7 @@
 package me.dmk.app.giveaway;
 
 import lombok.Data;
+import me.dmk.app.database.data.entity.DataEntity;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.server.Server;
 
@@ -15,6 +16,7 @@ import java.util.List;
  */
 
 @Data
+@DataEntity(collection = "giveaways")
 public class Giveaway implements Serializable {
 
     private final long server;

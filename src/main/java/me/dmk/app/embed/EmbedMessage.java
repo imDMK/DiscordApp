@@ -41,6 +41,7 @@ public class EmbedMessage {
 
         this.embedBuilder.setTitle((successEmoji.map(KnownCustomEmoji::getMentionTag).orElse("✅")) + " Wykonano!");
         this.embedBuilder.setColor(this.successColor);
+
         return this.embedBuilder;
     }
 
@@ -49,6 +50,7 @@ public class EmbedMessage {
 
         this.embedBuilder.setTitle((successEmoji.map(KnownCustomEmoji::getMentionTag).orElse("⚠")) + " Ostrzeżenie!");
         this.embedBuilder.setColor(this.warningColor);
+
         return this.embedBuilder;
     }
 
@@ -57,6 +59,7 @@ public class EmbedMessage {
 
         this.embedBuilder.setTitle((successEmoji.map(KnownCustomEmoji::getMentionTag).orElse("❌")) + " Błąd!");
         this.embedBuilder.setColor(this.errorColor);
+
         return this.embedBuilder;
     }
 
@@ -65,6 +68,7 @@ public class EmbedMessage {
 
         this.embedBuilder.setTitle((logEmoji.map(KnownCustomEmoji::getMentionTag).orElse("\uD83D\uDCDA")) + " Nowe zdarzenie!");
         this.embedBuilder.setColor(this.logColor);
+
         return this.embedBuilder;
     }
 
@@ -73,6 +77,7 @@ public class EmbedMessage {
 
         this.embedBuilder.setTitle((successEmoji.map(KnownCustomEmoji::getMentionTag).orElse("\uD83C\uDF89")) + " Konkurs!");
         this.embedBuilder.setColor(this.giveawayColor);
+
         return this.embedBuilder;
     }
 }

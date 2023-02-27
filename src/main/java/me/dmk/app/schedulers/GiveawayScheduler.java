@@ -1,14 +1,13 @@
 package me.dmk.app.schedulers;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.dmk.app.giveaway.Giveaway;
 import me.dmk.app.giveaway.GiveawayController;
 import me.dmk.app.utils.StringUtil;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.server.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.List;
@@ -18,6 +17,7 @@ import java.util.Optional;
  * Created by DMK on 09.12.2022
  */
 
+@Slf4j
 @AllArgsConstructor
 public class GiveawayScheduler implements Runnable {
 
@@ -26,8 +26,6 @@ public class GiveawayScheduler implements Runnable {
 
     @Override
     public void run() {
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-
         List<Giveaway> giveawayList = this.giveawayController.getGiveawayMap().values()
                 .stream()
                 .filter(giveaway -> !giveaway.isEnded())
@@ -38,7 +36,7 @@ public class GiveawayScheduler implements Runnable {
             if (serverOptional.isEmpty()) {
                 this.giveawayController.delete(giveaway);
 
-                logger.info("Deleted giveaway " + giveaway.getAward() + " due to server is invalid.");
+                log.info("Deleted giveaway " + giveaway.getAward() + " due to server is invalid.");
                 return;
             }
 
@@ -48,7 +46,7 @@ public class GiveawayScheduler implements Runnable {
             if (serverTextChannelOptional.isEmpty()) {
                 this.giveawayController.delete(giveaway);
 
-                logger.info("Deleted giveaway " + giveaway.getAward() + " due to channel doesn't exists.");
+                log.info("Deleted giveaway " + giveaway.getAward() + " due to channel doesn't exists.");
                 return;
             }
 
@@ -66,7 +64,7 @@ public class GiveawayScheduler implements Runnable {
                     .exceptionallyAsync(throwable -> {
                         this.giveawayController.delete(giveaway);
 
-                        logger.info("Deleted giveaway " + giveaway.getWinners() + "x "+ giveaway.getAward() + " due to message doesn't exists.");
+                        log.info("Deleted giveaway " + giveaway.getWinners() + "x "+ giveaway.getAward() + " due to message doesn't exists.");
                         return null;
                     });
         }

@@ -1,6 +1,7 @@
 package me.dmk.app.ticket;
 
 import lombok.Data;
+import me.dmk.app.database.data.entity.DataEntity;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
@@ -12,6 +13,7 @@ import java.io.Serializable;
  */
 
 @Data
+@DataEntity(collection = "tickets")
 public class Ticket implements Serializable {
 
     private final long server;

@@ -7,7 +7,7 @@ import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.hjson.HjsonConfigurer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import me.dmk.app.commands.CommandService;
+import me.dmk.app.commands.CommandController;
 import me.dmk.app.configuration.ClientConfiguration;
 import me.dmk.app.database.MongoClientService;
 import me.dmk.app.database.data.MongoDataService;
@@ -46,7 +46,7 @@ public class DiscordApp {
     private final ServerSettingsController serverSettingsController;
     private final TicketController ticketController;
     private final WarnController warnController;
-    private final CommandService commandService;
+    private final CommandController commandController;
 
     private final ScheduledExecutorService executorService;
 
@@ -92,13 +92,13 @@ public class DiscordApp {
 
         log.info("Loaded all services. Loading commands...");
 
-        this.commandService = new CommandService(this.discordApi, this.giveawayController, this.serverSettingsController, this.warnController);
-        this.commandService.registerCommands();
+        this.commandController = new CommandController(this.discordApi, this.giveawayController, this.serverSettingsController, this.warnController);
+        this.commandController.registerCommands();
 
         log.info("Loaded all commands.");
 
         /* Listeners */
-        this.discordApi.addSlashCommandCreateListener(new CommandListener(this.commandService));
+        this.discordApi.addSlashCommandCreateListener(new CommandListener(this.commandController));
         this.discordApi.addButtonClickListener(new ButtonListener(this.giveawayController, this.serverSettingsController, this.ticketController, this.warnController));
         this.discordApi.addServerChannelDeleteListener(new ChannelListener(this.ticketController));
         this.discordApi.addMessageEditListener(new MessageListener(this.giveawayController, this.serverSettingsController));

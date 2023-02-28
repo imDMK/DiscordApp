@@ -1,7 +1,7 @@
 package me.dmk.app.listeners;
 
 import lombok.AllArgsConstructor;
-import me.dmk.app.commands.CommandService;
+import me.dmk.app.commands.CommandController;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.listener.interaction.SlashCommandCreateListener;
@@ -13,7 +13,7 @@ import org.javacord.api.listener.interaction.SlashCommandCreateListener;
 @AllArgsConstructor
 public class CommandListener implements SlashCommandCreateListener {
 
-    private final CommandService commandService;
+    private final CommandController commandController;
 
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
@@ -21,7 +21,7 @@ public class CommandListener implements SlashCommandCreateListener {
 
         String commandName = interaction.getCommandName();
 
-        interaction.getServer().ifPresent(server -> this.commandService.getCommand(commandName)
+        interaction.getServer().ifPresent(server -> this.commandController.getCommand(commandName)
                 .ifPresent(command -> command.execute(server, interaction))
         );
     }

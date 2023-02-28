@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 @RequiredArgsConstructor
-public class CommandService {
+public class CommandController {
 
     @Getter
     private final Map<String, Command> commands = new ConcurrentHashMap<>();

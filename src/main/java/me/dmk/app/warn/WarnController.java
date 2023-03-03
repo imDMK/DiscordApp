@@ -29,7 +29,7 @@ public class WarnController {
     private Map<String, Warn> warnMap = new ConcurrentHashMap<>();
 
     public void load() {
-        this.mongoDataService.findAll("warns", Warn.class).forEach(warn -> {
+        this.mongoDataService.findAll(Warn.class).forEach(warn -> {
             if (this.discordApi.getServerById(warn.getServer()).isEmpty()) {
                 delete(warn);
                 log.info("Deleted warn " + warn.getIdentifier() + " due to server doesn't exists.");

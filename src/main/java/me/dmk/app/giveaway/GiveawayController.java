@@ -37,7 +37,7 @@ public class GiveawayController {
     private Map<Long, Giveaway> giveawayMap = new ConcurrentHashMap<>();
 
     public void load() {
-        this.mongoDataService.findAll("giveaways", Giveaway.class).forEach(giveaway -> {
+        this.mongoDataService.findAll(Giveaway.class).forEach(giveaway -> {
             Optional<Server> server = discordApi.getServerById(giveaway.getServer());
             if (server.isEmpty()) {
                 this.delete(giveaway);

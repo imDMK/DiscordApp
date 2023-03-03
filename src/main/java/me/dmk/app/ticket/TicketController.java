@@ -31,7 +31,7 @@ public class TicketController {
     private final Map<Long, Ticket> ticketMap = new ConcurrentHashMap<>();
 
     public void load() {
-        this.mongoDataService.findAll("tickets", Ticket.class).forEach(ticket -> {
+        this.mongoDataService.findAll(Ticket.class).forEach(ticket -> {
             Optional<Server> serverOptional = discordApi.getServerById(ticket.getServer());
             if (serverOptional.isEmpty()) {
                 this.delete(ticket);

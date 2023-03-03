@@ -28,7 +28,7 @@ public class ServerSettingsController {
 
     public void load() {
 
-        this.mongoDataService.findAll("serverSettings", ServerSettings.class).forEach(serverSettings ->
+        this.mongoDataService.findAll(ServerSettings.class).forEach(serverSettings ->
                 this.discordApi.getServerById(serverSettings.getServer())
                         .ifPresentOrElse(server ->
                                         this.serverSettingsMap.put(server.getId(), serverSettings)

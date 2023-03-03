@@ -37,8 +37,8 @@ public class MongoDataService {
         return this.mongoClientService.getMongoDatabase().getCollection(collection);
     }
 
-    public <V> List<V> findAll(String collectionName, Class<V> vClass) {
-        MongoCollection<Document> mongoCollection = this.mongoClientService.getMongoDatabase().getCollection(collectionName);
+    public <V> List<V> findAll(Class<V> vClass) {
+        MongoCollection<Document> mongoCollection = this.getCollection(vClass);
 
         ArrayList<V> classes = new ArrayList<>();
 

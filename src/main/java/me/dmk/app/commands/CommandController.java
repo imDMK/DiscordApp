@@ -119,46 +119,47 @@ public class CommandController {
                 )
                 .addOption(
                         SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND_GROUP, "edit", "Edytuj ustawienia",
-                        Arrays.asList(
-                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "welcomechannel", "Zmień kanał powitalny",
-                                        Collections.singletonList(
-                                                SlashCommandOption.createChannelOption("channel", "Oznacz kanał", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
-                                        )
-                                ),
+                                Arrays.asList(
+                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "welcomechannel", "Zmień kanał powitalny",
+                                                Collections.singletonList(
+                                                        SlashCommandOption.createChannelOption("channel", "Oznacz kanał", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
+                                                )
+                                        ),
 
-                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "logschannel", "Zmień kanał logów",
-                                        Collections.singletonList(SlashCommandOption.createChannelOption("channel", "Oznacz kanał", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
-                                        )
-                                ),
+                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "logschannel", "Zmień kanał logów",
+                                                Collections.singletonList(
+                                                        SlashCommandOption.createChannelOption("channel", "Oznacz kanał", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
+                                                )
+                                        ),
 
-                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "maxwarns", "Zmień wartość maksymalnych ostrzeżeń",
-                                        Collections.singletonList(SlashCommandOption.createLongOption("value", "Wpisz nową ilość maksymalnych ostrzeżeń", true))
-                                ),
+                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "maxwarns", "Zmień wartość maksymalnych ostrzeżeń",
+                                                Collections.singletonList(SlashCommandOption.createLongOption("value", "Wpisz nową ilość maksymalnych ostrzeżeń", true))
+                                        ),
 
-                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "welcomeroles", "Zmień role powitalne",
-                                        Arrays.asList(
-                                                SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "action", "Wybierz akcję", true,
-                                                        Arrays.asList(
-                                                                SlashCommandOptionChoice.create("add", "add"),
-                                                                SlashCommandOptionChoice.create("remove", "remove")
-                                                        )
-                                                ),
-                                                SlashCommandOption.createRoleOption("role", "Oznacz rolę", true)
-                                        )
-                                ),
+                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "welcomeroles", "Zmień role powitalne",
+                                                Arrays.asList(
+                                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "action", "Wybierz akcję", true,
+                                                                Arrays.asList(
+                                                                        SlashCommandOptionChoice.create("add", "add"),
+                                                                        SlashCommandOptionChoice.create("remove", "remove")
+                                                                )
+                                                        ),
+                                                        SlashCommandOption.createRoleOption("role", "Oznacz rolę", true)
+                                                )
+                                        ),
 
-                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "ticketscategory", "Kategoria zgłoszeń",
-                                        Collections.singletonList(
-                                                SlashCommandOption.createStringOption("category", "Podaj ID kategorii", true)
-                                        )
-                                ),
+                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "ticketscategory", "Kategoria zgłoszeń",
+                                                Collections.singletonList(
+                                                        SlashCommandOption.createStringOption("category", "Podaj ID kategorii", true)
+                                                )
+                                        ),
 
-                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "ticketsrolechecker", "Rola administracji zgłoszeń",
-                                        Collections.singletonList(
-                                                SlashCommandOption.createRoleOption("role", "Oznacz rolę", true)
+                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "ticketsrolechecker", "Rola administracji zgłoszeń",
+                                                Collections.singletonList(
+                                                        SlashCommandOption.createRoleOption("role", "Oznacz rolę", true)
+                                                )
                                         )
                                 )
-                        )
                 ))
                 .setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR)
                 .createGlobal(this.discordApi);

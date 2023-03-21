@@ -7,9 +7,11 @@ import me.dmk.app.serversettings.ServerSettingsController;
 import me.dmk.app.warn.Warn;
 import me.dmk.app.warn.WarnController;
 import org.javacord.api.entity.message.MessageFlag;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,12 @@ public class WarnCommand extends Command {
 
         this.warnController = warnController;
         this.serverSettingsController = serverSettingsController;
+
+        this.setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR);
+        this.addOptions(
+                SlashCommandOption.createUserOption("user", "Wskaż użytkownika", true),
+                SlashCommandOption.createStringOption("reason", "Podaj powód", false)
+        );
     }
 
     @Override

@@ -8,8 +8,10 @@ import me.dmk.app.utils.StringUtil;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.MessageFlag;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,12 @@ public class GiveawayReRollCommand extends Command {
         super(commandName, commandDescription);
 
         this.giveawayController = giveawayController;
+
+        this.setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR);
+        this.addOptions(
+                SlashCommandOption.createStringOption("messageId", "ID wiadomości z konkursem", true),
+                SlashCommandOption.createLongOption("winners", "Ilość zwyciężców", true)
+        );
     }
 
     @Override

@@ -3,9 +3,11 @@ package me.dmk.app.commands.implementation;
 import me.dmk.app.commands.Command;
 import me.dmk.app.embed.EmbedMessage;
 import org.javacord.api.entity.message.MessageFlag;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +18,13 @@ import java.util.concurrent.TimeUnit;
 public class BanCommand extends Command {
     public BanCommand(String commandName, String commandDescription) {
         super(commandName, commandDescription);
+
+        this.setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR);
+        this.addOptions(
+                SlashCommandOption.createUserOption("user", "Wskaż użytkownika", true),
+                SlashCommandOption.createStringOption("reason", "Powód", false),
+                SlashCommandOption.createBooleanOption("deleteMessages", "Usunąć wiadomości użytkownika?", false)
+        );
     }
 
     @Override

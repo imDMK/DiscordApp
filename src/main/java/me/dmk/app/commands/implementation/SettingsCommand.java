@@ -7,16 +7,15 @@ import me.dmk.app.serversettings.ServerSettingsController;
 import me.dmk.app.utils.StringUtil;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
+import org.javacord.api.entity.channel.ChannelType;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.message.MessageFlag;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
-import org.javacord.api.interaction.SlashCommandInteraction;
-import org.javacord.api.interaction.SlashCommandInteractionOption;
+import org.javacord.api.interaction.*;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -33,6 +32,53 @@ public class SettingsCommand extends Command {
 
         this.serverSettingsController = serverSettingsController;
         this.discordApi = discordApi;
+
+        this.setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR);
+        this.addOptions(
+                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND_GROUP, "edit", "Edytuj ustawienia",
+                        Arrays.asList(
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "welcomechannel", "Zmień kanał powitalny",
+                                        Collections.singletonList(
+                                                SlashCommandOption.createChannelOption("channel", "Oznacz kanał", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
+                                        )
+                                ),
+
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "logschannel", "Zmień kanał logów",
+                                        Collections.singletonList(
+                                                SlashCommandOption.createChannelOption("channel", "Oznacz kanał", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
+                                        )
+                                ),
+
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "maxwarns", "Zmień wartość maksymalnych ostrzeżeń",
+                                        Collections.singletonList(SlashCommandOption.createLongOption("value", "Wpisz nową ilość maksymalnych ostrzeżeń", true))
+                                ),
+
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "welcomeroles", "Zmień role powitalne",
+                                        Arrays.asList(
+                                                SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "action", "Wybierz akcję", true,
+                                                        Arrays.asList(
+                                                                SlashCommandOptionChoice.create("add", "add"),
+                                                                SlashCommandOptionChoice.create("remove", "remove")
+                                                        )
+                                                ),
+                                                SlashCommandOption.createRoleOption("role", "Oznacz rolę", true)
+                                        )
+                                ),
+
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "ticketscategory", "Kategoria zgłoszeń",
+                                        Collections.singletonList(
+                                                SlashCommandOption.createStringOption("category", "Podaj ID kategorii", true)
+                                        )
+                                ),
+
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "ticketsrolechecker", "Rola administracji zgłoszeń",
+                                        Collections.singletonList(
+                                                SlashCommandOption.createRoleOption("role", "Oznacz rolę", true)
+                                        )
+                                )
+                        )
+                )
+        );
     }
 
     @Override

@@ -3,9 +3,11 @@ package me.dmk.app.commands.implementation;
 import me.dmk.app.commands.Command;
 import me.dmk.app.embed.EmbedMessage;
 import org.javacord.api.entity.message.MessageFlag;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.server.Ban;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +19,11 @@ import java.util.regex.Pattern;
 public class UnBanCommand extends Command {
     public UnBanCommand(String commandName, String commandDescription) {
         super(commandName, commandDescription);
+
+        this.setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR);
+        this.addOption(
+                SlashCommandOption.createStringOption("user", "Wpisz ID lub NICK użytkownika", true)
+        );
     }
 
     @Override

@@ -6,16 +6,20 @@ import me.dmk.app.giveaway.Giveaway;
 import me.dmk.app.giveaway.GiveawayController;
 import me.dmk.app.utils.StringUtil;
 import me.dmk.app.utils.TimeUtil;
+import org.javacord.api.entity.channel.ChannelType;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -30,6 +34,14 @@ public class GiveawayCommand extends Command {
         super(commandName, commandDescription);
 
         this.giveawayController = giveawayController;
+
+        this.setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR);
+        this.addOptions(
+                SlashCommandOption.createChannelOption("channel", "Wskaż kanał tekstowy", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL)),
+                SlashCommandOption.createStringOption("award", "Wpisz nagrodę", true),
+                SlashCommandOption.createLongOption("winners", "Podaj ilość zwyciężców", true),
+                SlashCommandOption.createStringOption("expire", "Podaj czas trwania konkursu (np. 7d)", true)
+        );
     }
 
     @Override

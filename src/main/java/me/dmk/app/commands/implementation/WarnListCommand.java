@@ -8,9 +8,11 @@ import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.component.ActionRowBuilder;
 import org.javacord.api.entity.message.component.Button;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,6 +29,11 @@ public class WarnListCommand extends Command {
         super(commandName, commandDescription);
 
         this.warnController = warnController;
+
+        this.setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR);
+        this.addOption(
+                SlashCommandOption.createUserOption("user", "Wskaż użytkownika", true)
+        );
     }
 
     @Override
@@ -38,7 +45,7 @@ public class WarnListCommand extends Command {
            return;
         }
 
-        List<Warn> warnList = warnController.gets(user.getId())
+        List<Warn> warnList = this.warnController.gets(user.getId())
                 .stream()
                 .sorted(Comparator.comparing(Warn::getCreated).reversed())
                 .toList();

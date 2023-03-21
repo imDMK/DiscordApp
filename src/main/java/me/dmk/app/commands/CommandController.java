@@ -7,17 +7,10 @@ import me.dmk.app.giveaway.GiveawayController;
 import me.dmk.app.serversettings.ServerSettingsController;
 import me.dmk.app.warn.WarnController;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.channel.ChannelType;
-import org.javacord.api.entity.permission.PermissionType;
-import org.javacord.api.interaction.SlashCommand;
-import org.javacord.api.interaction.SlashCommandOption;
-import org.javacord.api.interaction.SlashCommandOptionChoice;
-import org.javacord.api.interaction.SlashCommandOptionType;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -45,7 +38,7 @@ public class CommandController {
         Command warnCommand = new WarnCommand("warn", "Nadaj ostrzeżenie dla użytkownika", this.warnController, this.serverSettingsController);
         Command warnListCommand = new WarnListCommand("warnlist", "Sprawdź ostrzeżenia użytkownika", this.warnController);
 
-        this.putCommand(
+        this.registerCommand(
                 banCommand,
                 giveawayCommand,
                 giveawayReRollCommand,
@@ -55,144 +48,16 @@ public class CommandController {
                 warnCommand,
                 warnListCommand
         );
-
-        SlashCommand.with(banCommand.getCommandName(), banCommand.getCommandDescription())
-                .addOption(
-                        SlashCommandOption.createUserOption("user", "Wskaż użytkownika", true)
-                )
-                .addOption(
-                        SlashCommandOption.createStringOption("reason", "Podaj powód", false)
-                )
-                .addOption(
-                        SlashCommandOption.createBooleanOption("deleteMessages", "Czy usunąć wiadomości użytkownika?", false)
-                )
-                .setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR)
-                .createGlobal(this.discordApi);
-
-        SlashCommand.with(giveawayCommand.getCommandName(), giveawayCommand.getCommandDescription())
-                .addOption(
-                        SlashCommandOption.createChannelOption("channel", "Wskaż kanał tekstowy", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
-                )
-                .addOption(
-                        SlashCommandOption.createStringOption("award", "Wpisz nagrodę", true)
-                )
-                .addOption(
-                        SlashCommandOption.createLongOption("winners", "Podaj ilość zwyciężców", true)
-                )
-                .addOption(
-                        SlashCommandOption.createStringOption("expire", "Podaj czas trwania konkursu (np. 7d)", true)
-                )
-                .setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR)
-                .createGlobal(this.discordApi);
-
-        SlashCommand.with(giveawayReRollCommand.getCommandName(), giveawayReRollCommand.getCommandDescription())
-                .addOption(
-                        SlashCommandOption.createStringOption("messageId", "Podaj ID wiadomości z konkursem", true)
-                )
-                .addOption(
-                        SlashCommandOption.createLongOption("winners", "Podaj ilość zwyciężców", true)
-                )
-                .setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR)
-                .createGlobal(this.discordApi);
-
-        SlashCommand.with(messageCommand.getCommandName(), messageCommand.getCommandDescription())
-                .addOption(
-                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "action", "Wybierz rodzaj interakcji", true,
-                                Arrays.asList(
-                                        SlashCommandOptionChoice.create("ticket", "ticket"),
-                                        SlashCommandOptionChoice.create("send", "send")
-                                )
-                        )
-                )
-                .addOption(
-                        SlashCommandOption.createChannelOption("channel", "Wskaż kanał tekstowy", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
-                )
-                .addOption(
-                        SlashCommandOption.createStringOption("message", "Wpisz treść wiadomości (użyj {NL} do nowej linii w wiadomości embed)", true)
-                )
-                .setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR)
-                .createGlobal(this.discordApi);
-
-        SlashCommand.with(settingsCommand.getCommandName(), settingsCommand.getCommandDescription())
-                .addOption(
-                        SlashCommandOption.create(SlashCommandOptionType.SUB_COMMAND, "show", "Pokaż aktualne ustawienia")
-                )
-                .addOption(
-                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND_GROUP, "edit", "Edytuj ustawienia",
-                                Arrays.asList(
-                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "welcomechannel", "Zmień kanał powitalny",
-                                                Collections.singletonList(
-                                                        SlashCommandOption.createChannelOption("channel", "Oznacz kanał", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
-                                                )
-                                        ),
-
-                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "logschannel", "Zmień kanał logów",
-                                                Collections.singletonList(
-                                                        SlashCommandOption.createChannelOption("channel", "Oznacz kanał", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL))
-                                                )
-                                        ),
-
-                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "maxwarns", "Zmień wartość maksymalnych ostrzeżeń",
-                                                Collections.singletonList(SlashCommandOption.createLongOption("value", "Wpisz nową ilość maksymalnych ostrzeżeń", true))
-                                        ),
-
-                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "welcomeroles", "Zmień role powitalne",
-                                                Arrays.asList(
-                                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "action", "Wybierz akcję", true,
-                                                                Arrays.asList(
-                                                                        SlashCommandOptionChoice.create("add", "add"),
-                                                                        SlashCommandOptionChoice.create("remove", "remove")
-                                                                )
-                                                        ),
-                                                        SlashCommandOption.createRoleOption("role", "Oznacz rolę", true)
-                                                )
-                                        ),
-
-                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "ticketscategory", "Kategoria zgłoszeń",
-                                                Collections.singletonList(
-                                                        SlashCommandOption.createStringOption("category", "Podaj ID kategorii", true)
-                                                )
-                                        ),
-
-                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, "ticketsrolechecker", "Rola administracji zgłoszeń",
-                                                Collections.singletonList(
-                                                        SlashCommandOption.createRoleOption("role", "Oznacz rolę", true)
-                                                )
-                                        )
-                                )
-                ))
-                .setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR)
-                .createGlobal(this.discordApi);
-
-        SlashCommand.with(unBanCommand.getCommandName(), unBanCommand.getCommandDescription())
-                .addOption(
-                        SlashCommandOption.createStringOption("user", "Wpisz ID lub NICK użytkownika", true)
-                )
-                .setDefaultEnabledForPermissions(PermissionType.BAN_MEMBERS)
-                .createGlobal(this.discordApi);
-
-        SlashCommand.with(warnCommand.getCommandName(), warnListCommand.getCommandDescription())
-                .addOption(
-                        SlashCommandOption.createUserOption("user", "Wskaż użytkownika", true)
-                )
-                .addOption(
-                        SlashCommandOption.createStringOption("reason", "Podaj powód", false)
-                )
-                .setDefaultEnabledForPermissions(PermissionType.MANAGE_MESSAGES)
-                .createGlobal(this.discordApi);
-
-        SlashCommand.with(warnListCommand.getCommandName(), warnListCommand.getCommandDescription())
-                .addOption(
-                        SlashCommandOption.createUserOption("user", "Wskaż użytkownika", true)
-                )
-                .setDefaultEnabledForPermissions(PermissionType.MANAGE_MESSAGES)
-                .createGlobal(this.discordApi);
     }
 
-    public void putCommand(Command... commands) {
+    public void registerCommand(Command... commands) {
         for (Command command : commands) {
-            this.commands.put(command.getCommandName(), command);
+            this.commands.put(command.getName(), command);
         }
+
+        this.discordApi.bulkOverwriteGlobalApplicationCommands(
+                Set.of(commands)
+        );
     }
 
     public Optional<Command> getCommand(String commandName) {

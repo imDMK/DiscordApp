@@ -3,6 +3,7 @@ package me.dmk.app.commands.implementation;
 import me.dmk.app.commands.Command;
 import me.dmk.app.embed.EmbedMessage;
 import me.dmk.app.utils.StringUtil;
+import org.javacord.api.entity.channel.ChannelType;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.MessageBuilder;
@@ -10,8 +11,15 @@ import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
+import org.javacord.api.interaction.SlashCommandOptionChoice;
+import org.javacord.api.interaction.SlashCommandOptionType;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by DMK on 08.12.2022
@@ -21,6 +29,18 @@ public class MessageCommand extends Command {
 
     public MessageCommand(String commandName, String commandDescription) {
         super(commandName, commandDescription);
+
+        this.setDefaultEnabledForPermissions(PermissionType.ADMINISTRATOR);
+        this.addOptions(
+                SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "action", "Wybierz rodzaj interakcji", true,
+                        Arrays.asList(
+                                SlashCommandOptionChoice.create("ticket", "ticket"),
+                                SlashCommandOptionChoice.create("send", "send")
+                        )
+                ),
+                SlashCommandOption.createChannelOption("channel", "Kanał tekstowy", true, Collections.singleton(ChannelType.SERVER_TEXT_CHANNEL)),
+                SlashCommandOption.createStringOption("message", "Treść wiadomości (użyj {NL} do nowej linii w wiadomości embed)", true)
+        );
     }
 
     @Override
